@@ -10,17 +10,16 @@ import { Link } from "components";
 import { Version } from "components/common/Version";
 import { DocsIcon } from "components/icons/DocsIcon";
 import { DropdownMenu } from "components/ui/DropdownMenu";
+import { FlexContainer, FlexItem } from "components/ui/Flex";
 import { Text } from "components/ui/Text";
 
 import { useConfig } from "config";
 import { links } from "utils/links";
 
 import { ReactComponent as AirbyteLogo } from "./airbyteLogo.svg";
-import ConnectionsIcon from "./components/ConnectionsIcon";
-import DestinationIcon from "./components/DestinationIcon";
 import RecipesIcon from "./components/RecipesIcon";
 import SettingsIcon from "./components/SettingsIcon";
-import SourceIcon from "./components/SourceIcon";
+import { MainNav } from "./MainNav";
 import { NotificationIndicator } from "./NotificationIndicator";
 import styles from "./SideBar.module.scss";
 import { RoutePaths } from "../../../pages/routePaths";
@@ -104,45 +103,35 @@ export const SideBar: React.FC<SideBarProps> = ({ additionalTopItems, bottomMenu
   const bottomMenuArray = bottomMenuItems ?? OSSBottomMenuItems;
 
   return (
-    <nav className={styles.nav}>
-      <div>
-        <Link to={RoutePaths.Connections} aria-label={formatMessage({ id: "sidebar.homepage" })}>
-          <AirbyteLogo height={33} width={33} />
-        </Link>
-        {additionalTopItems}
-        <ul className={styles.menu} data-testid="navMainItems">
-          <li>
-            <NavLink className={navLinkClassName} to={RoutePaths.Connections} data-testid="connectionsLink">
-              <ConnectionsIcon />
-              <Text className={styles.text} size="sm">
-                <FormattedMessage id="sidebar.connections" />
-              </Text>
-            </NavLink>
-          </li>
-          <li>
-            <NavLink className={navLinkClassName} to={RoutePaths.Source} data-testid="sourcesLink">
-              <SourceIcon />
-              <Text className={styles.text} size="sm">
-                <FormattedMessage id="sidebar.sources" />
-              </Text>
-            </NavLink>
-          </li>
-          <li>
-            <NavLink className={navLinkClassName} to={RoutePaths.Destination} data-testid="destinationsLink">
-              <DestinationIcon />
-              <Text className={styles.text} size="sm">
-                <FormattedMessage id="sidebar.destinations" />
-              </Text>
-            </NavLink>
-          </li>
-        </ul>
-      </div>
-      <ul className={styles.menu} data-testid="navBottomMenu">
-        {bottomMenuArray.map((item, idx) => {
-          // todo: better key
-          return <li key={idx}>{item}</li>;
-        })}
-      </ul>
-    </nav>
+    <FlexContainer direction="column" alignItems="center" justifyContent="space-between" className={styles.menuContent}>
+      <nav className={styles.nav}>
+        <FlexItem>
+          <div>
+            <Link to={RoutePaths.Connections} aria-label={formatMessage({ id: "sidebar.homepage" })}>
+              <AirbyteLogo height={33} width={33} />
+            </Link>
+            {additionalTopItems}
+          </div>
+        </FlexItem>
+        <FlexContainer
+          direction="column"
+          alignItems="center"
+          justifyContent="space-between"
+          className={styles.menuContent}
+        >
+          <FlexItem>
+            <MainNav />
+          </FlexItem>
+          <FlexItem className={styles.bottomMenu}>
+            <ul className={styles.menu} data-testid="navBottomMenu">
+              {bottomMenuArray.map((item, idx) => {
+                // todo: better key
+                return <li key={idx}>{item}</li>;
+              })}
+            </ul>
+          </FlexItem>
+        </FlexContainer>
+      </nav>
+    </FlexContainer>
   );
 };
