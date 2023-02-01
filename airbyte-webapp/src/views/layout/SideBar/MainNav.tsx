@@ -15,8 +15,8 @@ export const MainNav: React.FC = () => {
   const navLinkClassName = useCalculateSidebarStyles();
 
   return (
-    <FlexContainer direction="column">
-      <ul data-testid="navMainItems">
+    <ul data-testid="navMainItems">
+      <FlexContainer direction="column" gap="sm">
         <li>
           <NavLink className={navLinkClassName} to={RoutePaths.Connections} data-testid="connectionsLink">
             <FlexContainer direction="column" alignItems="center" justifyContent="space-between">
@@ -46,8 +46,8 @@ export const MainNav: React.FC = () => {
               </Text>
             </FlexContainer>
           </NavLink>
-        </li>
-      </ul>
-    </FlexContainer>
+        </li>{" "}
+      </FlexContainer>
+    </ul>
   );
 };
