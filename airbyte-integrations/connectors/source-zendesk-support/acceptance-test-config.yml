@@ -29,6 +29,8 @@ acceptance_tests:
         empty_streams:
           - name: ticket_comments
             bypass_reason: "unable to test due to fast-changing data"
+          - name: ticket_metric_events
+            bypass_reason: "unable to test due to fast-changing data"
   incremental:
     tests:
       - config_path: "secrets/config.json"
