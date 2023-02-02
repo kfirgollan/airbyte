@@ -12,6 +12,9 @@ from collections import deque
 from concurrent.futures import Future, ProcessPoolExecutor
 from datetime import datetime, timedelta
 from functools import partial
+
+from airbyte_cdk.sources.streams.core import StreamData
+from airbyte_cdk.sources.streams.http.availability_strategy import HttpAvailabilityStrategy
 from math import ceil
 from pickle import PickleError, dumps
 from typing import Any, Iterable, List, Mapping, MutableMapping, Optional, Union
@@ -27,8 +30,11 @@ from airbyte_cdk.sources.streams.http.auth.core import HttpAuthenticator
 from airbyte_cdk.sources.streams.http.exceptions import DefaultBackoffException
 from airbyte_cdk.sources.streams.http.rate_limiting import TRANSIENT_EXCEPTIONS
 from airbyte_cdk.sources.utils.transform import TransformConfig, TypeTransformer
+from requests import HTTPError
 from requests.auth import AuthBase
 from requests_futures.sessions import PICKLE_ERROR, FuturesSession
+
+from source_zendesk_support.ZendeskSupportAvailabilityStrategy import ZendeskSupportAvailabilityStrategy
 
 DATETIME_FORMAT: str = "%Y-%m-%dT%H:%M:%SZ"
 LAST_END_TIME_KEY: str = "_last_end_time"
@@ -119,7 +125,7 @@ class BaseSourceZendeskSupportStream(HttpStream, ABC):
 
     @property
     def availability_strategy(self) -> Optional["AvailabilityStrategy"]:
-        return None
+        return HttpAvailabilityStrategy()
 
     def backoff_time(self, response: requests.Response) -> Union[int, float]:
         """
@@ -210,6 +216,10 @@ class SourceZendeskSupportStream(BaseSourceZendeskSupportStream):
     @property
     def url_base(self) -> str:
         return f"https://{self._subdomain}.zendesk.com/api/v2/"
+
+    @property
+    def availability_strategy(self) -> Optional["AvailabilityStrategy"]:
+        return ZendeskSupportAvailabilityStrategy()
 
     def path(self, **kwargs):
         return self.name
@@ -534,6 +544,20 @@ class Tickets(SourceZendeskIncrementalExportStream):
 
     response_list_name: str = "tickets"
     transformer: TypeTransformer = TypeTransformer(TransformConfig.DefaultSchemaNormalization)
+
+    def read_records(
+        self,
+        sync_mode: SyncMode,
+        cursor_field: List[str] = None,
+        stream_slice: Mapping[str, Any] = None,
+        stream_state: Mapping[str, Any] = None,
+    ) -> Iterable[StreamData]:
+        try:
+            yield from super(Tickets, self).read_records(sync_mode, cursor_field, stream_slice, stream_state)
+        except HTTPError as e:
+            if e.response.status_code == 400 and e.response.json().get('error', '') == 'StartTimeTooRecent':
+                return []
+            raise e
 
 
 class TicketComments(SourceZendeskSupportTicketEventsExportStream):
