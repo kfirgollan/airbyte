@@ -21,7 +21,7 @@ import { InsufficientPermissionsErrorBoundary } from "./InsufficientPermissionsE
 import styles from "./MainView.module.scss";
 import { CloudSideBar } from "../SideBar/CloudSideBar";
 
-const MainView: React.FC<React.PropsWithChildren<unknown>> = (props) => {
+const CloudMainView: React.FC<React.PropsWithChildren<unknown>> = (props) => {
   const { formatMessage } = useIntl();
   useIntercom();
   const workspace = useCurrentWorkspace();
@@ -89,4 +89,4 @@ const MainView: React.FC<React.PropsWithChildren<unknown>> = (props) => {
   );
 };
 
-export default MainView;
+export default CloudMainView;
