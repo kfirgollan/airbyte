@@ -5,9 +5,11 @@ import { HeadTitle } from "components/common/HeadTitle";
 import { Heading } from "components/ui/Heading";
 
 import { PageTrackingCodes, useTrackPage } from "hooks/services/Analytics";
+import { useExperiment } from "hooks/services/Experiment";
 
 import { Separator } from "./components/Separator";
 import { Disclaimer, SignupForm } from "./components/SignupForm";
+import { SimpleLeftSide } from "./components/SimpleLeftSide/SimpleLeftSide";
 import SpecialBlock from "./components/SpecialBlock";
 import styles from "./SignupPage.module.scss";
 import { OAuthLogin } from "../OAuthLogin";
@@ -18,7 +20,11 @@ interface SignupPageProps {
 
 const SignupPage: React.FC<SignupPageProps> = ({ highlightStyle }) => {
   useTrackPage(PageTrackingCodes.SIGNUP);
+  const isSimpleLeftSide = useExperiment("authPage.signup.simplifyLeftSide", false);
 
+  if (isSimpleLeftSide) {
+    return <SimpleLeftSide />;
+  }
   return (
     <div className={styles.container}>
       <HeadTitle titles={[{ id: "login.signup" }]} />

@@ -21,6 +21,7 @@ export interface Experiments {
   "authPage.oauth.github": boolean;
   "authPage.oauth.google.signUpPage": boolean;
   "authPage.oauth.github.signUpPage": boolean;
+  "authPage.signup.simplifyLeftSide": boolean;
   "onboarding.speedyConnection": boolean;
   "connection.onboarding.sources": string;
   "connection.onboarding.destinations": string;
